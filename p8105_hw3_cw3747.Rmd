@@ -1,0 +1,55 @@
+---
+title: "p8105_hw3_cw3747"
+author: "chuhan wang_cw3747"
+date: "2025-10-05"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(patchwork)
+
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Problem1
+### 1.1
+```{r}
+library(p8105.datasets)
+data("instacart")
+```
+
+```{r}
+instacart <- instacart |>
+  janitor::clean_names() 
+
+n_aisles <- n_distinct(instacart$aisle)    ## calculate aisles
+
+aisle_counts <- instacart |>
+  count(aisle, name = "n_items") |>
+  arrange(desc(n_items))   ## top aisles
+
+n_aisles
+head(aisle_counts, 10)
+```
+There are **`r n_aisles`** aisles in the instacart dataset, and the most orderd items are **`r aisle_counts$aisle[1:3]`**.
+

@@ -45,7 +45,7 @@ instacart <- instacart |>
 n_aisles <- n_distinct(instacart$aisle)    ## calculate aisles
 
 aisle_counts <- instacart |>
-  count(aisle, name = "n_items") |>
+  count(aisle, name = "n_items") |>       ## count the number of each item
   arrange(desc(n_items))   ## top aisles
 
 n_aisles
@@ -63,6 +63,22 @@ aisle_counts |>
   coord_flip() +           ## for easy reading
   labs(x = "Aisle", y = "Items ordered", title = ">10k items per aisle") +
   theme_minimal()
+```
+
+### 1.3
+```{r}
+sel_aisles <- c("baking ingredients", "dog food care", "packaged vegetables fruits")
+
+popular_items <- instacart |>
+  filter(aisle %in% sel_aisles) |>               ## keep the three aisles
+  select(aisle, product_name) |>                  
+  count(aisle, product_name, name = "n_orders") |>  ## keep product name and number
+  group_by(aisle) |>
+  slice_max(n_orders, n = 3, with_ties = FALSE) |>
+  arrange(aisle, desc(n_orders)) |>
+  ungroup()
+
+popular_items
 ```
 
 

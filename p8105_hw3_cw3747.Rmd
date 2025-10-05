@@ -182,3 +182,18 @@ ny_rent_year |>
 Over the past decade, the overall rental price trend in New York City has shown a steady upward trajectory.
 There was a temporary decline during 2020–2021, likely reflecting the economic slowdown and reduced housing demand associated with the COVID-19 pandemic, but after 2021, rental prices rebounded sharply and continued to rise through 2023–2024, reaching the highest levels in the dataset. And New York has the highest rent.
 
+### plot
+```{r}
+ny_rent_year |>
+  ggplot(aes(x = year, y = mean_rent, color = county, group = county)) +
+  geom_line(size = 1) +
+  labs(
+    title = "Average NYC Rental Price by County (2015–2024)",
+    x = "Year",
+    y = "Average Rent ($)",
+    color = "County") +
+  scale_x_continuous(breaks = seq(2015, 2024, by = 2)) +
+  theme_minimal()
+```
+Manhattan (New York County) consistently exhibits the highest rent levels, followed by Brooklyn (Kings County) and Queens. A temporary decline occurred around 2020–2021, likely due to the COVID-19 pandemic, followed by a steady recovery and continued growth in subsequent years. Bronx and Richmond counties have lower average rents overall but show similar upward trajectories in recent years.
+

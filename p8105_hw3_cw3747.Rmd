@@ -53,3 +53,17 @@ head(aisle_counts, 10)
 ```
 There are **`r n_aisles`** aisles in the instacart dataset, and the most orderd items are **`r aisle_counts$aisle[1:3]`**.
 
+### 1.2
+```{r}
+aisle_counts |>
+  filter(n_items > 10000) |>
+  mutate(aisle = fct_reorder(aisle, n_items)) |>
+  ggplot(aes(x = aisle, y = n_items)) +
+  geom_col() +
+  coord_flip() +           ## for easy reading
+  labs(x = "Aisle", y = "Items ordered", title = ">10k items per aisle") +
+  theme_minimal()
+```
+
+
+

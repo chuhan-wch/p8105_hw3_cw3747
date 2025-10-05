@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(patchwork)
+library(scales)
 
 
 knitr::opts_chunk$set(
@@ -103,4 +104,65 @@ mean_hour |>
   tab_header(title = "Mean order time by weekday (hours, 24h)") |>
   cols_label(product_name = "Product")
 ```
+
+## Description
+```{r}
+vals <- c(
+  nrow(instacart),
+  n_distinct(instacart$user_id),
+  n_distinct(instacart$order_id),
+  n_distinct(instacart$product_id),
+  n_distinct(instacart$department),
+  n_distinct(instacart$aisle)
+)
+scales::label_comma()(vals)
+```
+
+The Instacart dataset contains **`r format(nrow(instacart), big.mark = ",")` rows** and **`r ncol(instacart)` columns**; each row represents one product within an order. Key variables include order-level fields (`order_id`, `user_id`, `order_number`), timing (0–6 for Sun–Sat, 0–23 for hour), and product metadata (`product_id`, `product_name`, `aisle`, `department`). For example, one observation shows that user 1 bought 8 itmes including Organic Hass Avocado from the “fresh fruits” aisle on day 4 (Thursday) at 10 a.m. This illustrates how each row represents a single product within a specific order.
+
+In total there are **`r format(n_distinct(instacart$user_id), big.mark = ",")` users** making **`r format(n_distinct(instacart$order_id), big.mark = ",")` orders** across **`r n_distinct(instacart$department)` departments** and **`r n_distinct(instacart$aisle)` aisles**, covering **`r format(n_distinct(instacart$product_id), big.mark = ",")` products**.
+
+## Problem2
+### clean names
+```{r}
+zip_info <- read_csv("./zillow_data/Zip Codes.csv") |>
+  janitor::clean_names() |>
+  mutate(zip_code = as.character(zip_code))
+
+zillow_data <- read_csv("./zillow_data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") |>
+  janitor::clean_names() |>
+  rename(zip_code = region_name) |>
+  mutate(zip_code = as.character(zip_code))
+```
+
+```{r}
+zillow_data = zillow_data |>
+  pivot_longer(
+    cols = starts_with("x20"),
+    names_to = "date",
+    values_to = "rent_price"
+  ) |>
+   mutate(
+    date = as.Date(str_replace_all(str_remove(date, "x"), "_", "-")),
+    .keep = "unused")
+```
+
+```{r}
+ny_rent = zillow_data |>
+  left_join(zip_info, by = "zip_code") |>
+  arrange(zip_code, date)
+```
+
+### basic count
+```{r}
+zip_counts <- ny_rent |>
+  count(zip_code, name = "n_obs") |>
+  arrange(desc(n_obs))
+
+zip_116 <- sum(zip_counts$n_obs == 116)
+zip_few  <- sum(zip_counts$n_obs < 10)
+
+zip_116; zip_few
+```
+There are 147 ZIP codes observed 116 times, and no ZIP code is observed fewer than 10 times. Some ZIP codes are observed rarely due to differences in data availability and market characteristics. This may occur for several reasons: (A) during certain periods, there may have been no available rental units in those ZIP codes; (B) some ZIP codes correspond mainly to business or industrial districts, which are not typically included in Zillow’s rental database; and (C) Zillow may not have updated or maintained complete coverage for certain ZIP codes in a timely manner.
 

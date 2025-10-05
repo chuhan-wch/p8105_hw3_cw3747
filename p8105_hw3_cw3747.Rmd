@@ -81,5 +81,26 @@ popular_items <- instacart |>
 popular_items
 ```
 
+## 1.4
+```{r}
+library(gt)
+products <- c("Pink Lady Apples", "Coffee Ice Cream")
 
+weekday_levels <- c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")    ## to make readable
+
+mean_hour <- instacart |>
+  filter(product_name %in% products) |>
+  mutate(dow = factor(weekday_levels[order_dow + 1],
+                    levels = weekday_levels)) |>
+  group_by(product_name, dow) |>
+  summarize(mean_hour = mean(order_hour_of_day, na.rm = TRUE), .groups = "drop") |>
+  mutate(mean_hour = round(mean_hour, 1)) |>
+  pivot_wider(names_from = dow, values_from = mean_hour) |>
+  arrange(match(product_name, products))
+
+mean_hour |>
+  gt() |>
+  tab_header(title = "Mean order time by weekday (hours, 24h)") |>
+  cols_label(product_name = "Product")
+```
 

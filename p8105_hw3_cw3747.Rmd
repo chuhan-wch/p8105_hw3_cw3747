@@ -286,4 +286,21 @@ table_df |>
   )
 ```
 
+### age/sex/education
+```{r}
+clean_df |>
+  ggplot(aes(x = age, fill = sex)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~education) +
+  labs(
+    title = "Age Distributions by Sex and Education Level",
+    x = "Age (years)",
+    y = "Density",
+    fill = "Sex"
+  ) +
+  theme_minimal()
+```
+
+The plots present that actually there is a fairly balanced number of male and female participants across all education levels. Age distributions show that participants with higher education levels tend to be younger on average, while those with less than high school education are generally older, and women in the “More than High School” group appear slightly younger than their male counterparts.
+
 

@@ -330,3 +330,20 @@ activity_df |>
 
 We can see from the plot that among participants with High School and Less than High School education, both men and women show a clear decline in total MIMS values as age increases. In contrast, the More than High School group shows a flatter pattern, suggesting that higher-educated individuals may maintain a more stable activity level across age. What's more, female participants appear to have slightly higher activity levels than males in some age ranges, especially among those with High School education, but the differences are modest.
 
+### each seqn level
+```{r}
+library(tidyverse)
+
+hourly_df = clean_df |>
+  pivot_longer(
+    cols = starts_with("min"),
+    names_to = "minute",
+    names_prefix = "min",
+    values_to = "mims"
+  ) |>
+  mutate(
+    minute = as.numeric(minute),
+    hour = minute / 60    
+  )
+```
+

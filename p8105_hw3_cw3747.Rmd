@@ -269,5 +269,21 @@ clean_df = merged_df |>
                      `3` = "More than HS"))
 ```
 
+### sex and education
+```{r}
+table_df = clean_df |>
+  count(sex, education) |>
+  pivot_wider(
+    names_from = sex,
+    values_from = n,
+    values_fill = 0
+  )
+
+table_df |> 
+  gt() |>
+  tab_header(
+    title = "Number of Men and Women by Education Category"
+  )
+```
 
 

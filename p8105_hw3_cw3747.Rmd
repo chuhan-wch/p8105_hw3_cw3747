@@ -244,3 +244,30 @@ combined_plot
 ggsave("results/combined_plot.png", combined_plot, width = 10, height = 8, dpi = 300)
 ```
 
+## Problem3
+### read and clean
+```{r}
+accel_df = read_csv("./nhanes_accel.csv") |> 
+  janitor::clean_names()
+
+covar_df = read_csv("./nhanes_covar.csv", skip = 4, na = c("NA", ".", "")) |> 
+  janitor::clean_names()
+```
+
+### merge and tidy
+```{r}
+merged_df = left_join(covar_df, accel_df, by = "seqn") 
+
+clean_df = merged_df |> 
+  filter(age >= 21) |>                  
+  drop_na() |>     
+  mutate(
+  sex = recode(sex, `1` = "Male", `2` = "Female"),
+  education = recode(education,
+                     `1` = "Less than HS",
+                     `2` = "High School",
+                     `3` = "More than HS"))
+```
+
+
+

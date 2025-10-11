@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(patchwork)
 library(scales)
+library(dplyr)
 
 
 knitr::opts_chunk$set(
@@ -85,7 +86,6 @@ popular_items
 
 ## 1.4
 ```{r}
-library(gt)
 products <- c("Pink Lady Apples", "Coffee Ice Cream")
 
 weekday_levels <- c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")    ## to make readable
@@ -100,10 +100,9 @@ mean_hour <- instacart |>
   pivot_wider(names_from = dow, values_from = mean_hour) |>
   arrange(match(product_name, products))
 
-mean_hour |>
-  gt() |>
-  tab_header(title = "Mean order time by weekday (hours, 24h)") |>
-  cols_label(product_name = "Product")
+knitr::kable(mean_hour, format = "pipe", digits = 1,
+             col.names = c("Product","Sun","Mon","Tue","Wed","Thu","Fri","Sat"),
+             caption = "Mean order time by weekday (hours, 24h)")
 ```
 
 ## Description
@@ -177,9 +176,14 @@ ny_rent_year <- ny_rent |>
   ungroup()
 
 ny_rent_year |>
-  gt() |>
-  fmt_number(columns = mean_rent, decimals = 0) |>
-  tab_header(title = "Average NYC Rental Price by Borough and Year")
+  dplyr::mutate(mean_rent = round(mean_rent, 0)) |>
+  dplyr::arrange(county, year) |>
+  knitr::kable(
+    format   = "pipe",
+    col.names = c("Borough", "Year", "Mean rent"),
+    caption  = "Average NYC Rental Price by Borough and Year",
+    digits   = 0
+  )
 ```
 
 Over the past decade, the overall rental price trend in New York City has shown a steady upward trajectory.
@@ -283,10 +287,11 @@ table_df = clean_df |>
     values_fill = 0
   )
 
-table_df |> 
-  gt() |>
-  tab_header(
-    title = "Number of Men and Women by Education Category"
+table_df |>
+  dplyr::rename(Education = education) |>
+  knitr::kable(
+    format  = "pipe",
+    caption = "Number of Men and Women by Education Category"
   )
 ```
 
@@ -310,22 +315,21 @@ The plots present that actually there is a fairly balanced number of male and fe
 ### sum activity
 ```{r}
 activity_df = clean_df |>
-  mutate(
-    total_activity = rowSums(across(starts_with("min")), na.rm = TRUE)
-  )
+  mutate(total_activity = rowSums(across(starts_with("min")), na.rm = TRUE))
 
-activity_df |>
-  ggplot(aes(x = age, y = total_activity, color = sex)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "loess", se = FALSE) +
-  facet_wrap(~education) +
-  labs(
-    title = "Total Daily Activity vs Age by Sex and Education Level",
-    x = "Age (years)",
-    y = "Total Daily MIMS (Sum of 24-hour readings)",
-    color = "Sex"
-  ) +
-  theme_minimal()
+print(
+  ggplot(activity_df, aes(x = age, y = total_activity, color = sex)) +
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = "loess", se = FALSE) +
+    facet_wrap(~education) +
+    labs(
+      title = "Total Daily Activity vs Age by Sex and Education Level",
+      x = "Age (years)",
+      y = "Total Daily MIMS (Sum of 24-hour readings)",
+      color = "Sex"
+    ) +
+    theme_minimal()
+)
 ```
 
 We can see from the plot that among participants with High School and Less than High School education, both men and women show a clear decline in total MIMS values as age increases. In contrast, the More than High School group shows a flatter pattern, suggesting that higher-educated individuals may maintain a more stable activity level across age. What's more, female participants appear to have slightly higher activity levels than males in some age ranges, especially among those with High School education, but the differences are modest.

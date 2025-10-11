@@ -14,7 +14,6 @@ library(tidyverse)
 library(patchwork)
 library(scales)
 library(dplyr)
-library(tidyr)
 
 
 knitr::opts_chunk$set(
